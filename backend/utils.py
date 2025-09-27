@@ -1,4 +1,5 @@
 import os
+import base64
 from dotenv import load_dotenv
 import google.generativeai as genai
 from algosdk import mnemonic
@@ -32,21 +33,6 @@ if USE_API and GEMINI_API_KEY:
 # -----------------------------
 # AI & Kategori Fonksiyonları
 # -----------------------------
-def categorize_text(description):
-    """
-    Harcama açıklamasını kategoriye ayırır.
-    Gemini API varsa gerçek zamanlı, yoksa rule-based.
-    Döner: category, suggestion
-    """
-    if USE_API and GEMINI_API_KEY:
-        try:
-            return categorize_with_gemini(description)
-        except Exception as e:
-            print("Gemini API hatası:", e)
-            return categorize_rule_based(description)
-    else:
-        return categorize_rule_based(description)
-
 def categorize_with_gemini(text):
     """
     Gemini API ile kategori ve öneri üretir.
@@ -84,6 +70,21 @@ def categorize_rule_based(text):
         return "alışveriş", "Öneri: Kampanya ve kuponları kullanın."
     return "diğer", "Öneri: Harcamayı gözden geçirin."
 
+def categorize_text(description):
+    """
+    Harcama açıklamasını kategoriye ayırır.
+    Gemini API varsa gerçek zamanlı, yoksa rule-based.
+    Döner: category, suggestion
+    """
+    if USE_API and GEMINI_API_KEY:
+        try:
+            return categorize_with_gemini(description)
+        except Exception as e:
+            print("Gemini API hatası:", e)
+            return categorize_rule_based(description)
+    else:
+        return categorize_rule_based(description)
+
 # -----------------------------
 # Algorand Fonksiyonları
 # -----------------------------
@@ -120,3 +121,19 @@ def get_explorer_link(txid):
     Algorand Testnet Explorer linki (resmi)
     """
     return f"https://testnet.algoexplorer.io/tx/{txid}"
+
+def get_transaction_info(txid):
+    """
+    TxID ile Algorand transaction bilgisini döner.
+    Note alanını çözer ve explorer linki oluşturur.
+    """
+    info = algod_client.pending_transaction_info(txid)
+    note_b64 = info.get("txn", {}).get("txn", {}).get("note")
+    decoded_note = base64.b64decode(note_b64).decode() if note_b64 else None
+    explorer_link = f"https://testnet.algoexplorer.io/tx/{txid}"
+    return {
+        "txid": txid,
+        "decoded_note": decoded_note,
+        "explorer_link": explorer_link,
+        "raw_info": info
+    }
