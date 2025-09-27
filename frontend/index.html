@@ -1,89 +1,227 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-    <title>FinTrust Demo</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-        }
-        input, select, button {
-            padding: 10px;
-            margin: 5px 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .result p { margin: 5px 0; }
-    </style>
+<meta charset="UTF-8">
+<title>FinTrust Demo</title>
+<style>
+@keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 20%;}
+    100% {background-position: 0% 40%;}
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #d4b3f9, #b3d4ff, #a3e0ff, #c6b8ff);
+    background-size: 400% 400%;
+    animation: gradientBG 20s ease infinite;
+    color: #333;
+}
+
+nav {
+    width: 100%;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+nav h1 { margin: 0; font-size: 24px; font-weight: bold; color: #5d3fd3; }
+nav a { color: #5d3fd3; text-decoration: none; margin-left: 20px; font-weight: 500; }
+nav a:hover { text-decoration: underline; }
+
+.container {
+    max-width: 500px;
+    margin: 120px auto 50px auto;
+    padding: 30px;
+    background: rgba(255,255,255,0.85);
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    color: #333;
+}
+
+h2 { text-align: center; margin-bottom: 20px; font-size: 28px; color: #5d3fd3; }
+
+input, select, button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+}
+
+input, select { background: #fdfdff; color: #333; }
+input::placeholder { color: #aaa; }
+
+button {
+    background: linear-gradient(45deg, #b3a5f9, #87c8ff);
+    color: #fff; font-weight: bold;
+    cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: none;
+}
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    background: linear-gradient(45deg, #a288f0, #74b8e7);
+}
+
+.result {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f9f9ff;
+    border-radius: 12px;
+    color: #333;
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid #ccc;
+}
+
+/* Chat balonları */
+.message {
+    position: relative;
+    padding: 12px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+}
+
+/* Kullanıcı mesajı */
+.message.user {
+    background: #b3d4ff;
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+}
+.message.user::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: -10px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid #b3d4ff;
+    border-left: 10px solid transparent;
+}
+
+/* Sistem mesajı */
+.message.system {
+    background: #e3e0ff;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+}
+.message.system::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -10px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid #e3e0ff;
+    border-right: 10px solid transparent;
+}
+
+@media (max-width: 600px) {
+    .container { margin: 100px 20px; padding: 20px; }
+    nav { padding: 10px 20px; }
+}
+</style>
 </head>
 <body>
-    <h1>Harcamayı Ekle</h1>
+<nav>
+    <h1>FinTrust</h1>
+    <div>
+        <a href="#add-expense">Harcamayı Ekle</a>
+        <a href="#result">Sonuçlar</a>
+    </div>
+</nav>
+
+<div class="container" id="add-expense">
+    <h2>Harcamayı Ekle</h2>
     <form id="expense-form">
-        Açıklama: <input type="text" id="description" required><br>
-        Tutar: <input type="number" id="amount" required><br>
+        Açıklama: <input type="text" id="description" placeholder="Örn: Starbucks Latte" required>
+        Tutar: <input type="number" id="amount" placeholder="Örn: 25" required>
         Para Birimi:
         <select id="currency">
             <option value="TL">TL</option>
             <option value="USD">USD</option>
             <option value="EUR">EUR</option>
-        </select><br>
+        </select>
         <button type="submit">Gönder</button>
     </form>
 
-    <h2>Sonuç</h2>
     <div id="result" class="result"></div>
+</div>
 
-    <script>
-        const form = document.getElementById("expense-form");
-        const resultDiv = document.getElementById("result");
+<script>
+const form = document.getElementById("expense-form");
+const resultDiv = document.getElementById("result");
 
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-            const description = document.getElementById("description").value;
-            const amount = parseFloat(document.getElementById("amount").value);
-            const currency = document.getElementById("currency").value;
+    const description = document.getElementById("description").value;
+    const amount = parseFloat(document.getElementById("amount").value);
+    const currency = document.getElementById("currency").value;
 
-            try {
-                const response = await fetch("http://127.0.0.1:5000/add_expense", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ description, amount, currency })
-                });
+    // Kullanıcı mesajı
+    const userDiv = document.createElement("div");
+    userDiv.classList.add("message", "user");
+    userDiv.innerHTML = `<strong>Sen:</strong> ${description} - ${amount} ${currency}`;
+    resultDiv.appendChild(userDiv);
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    resultDiv.innerHTML = `
-                        <p><strong>Kategori:</strong> ${data.category}</p>
-                        <p><strong>Öneri:</strong> ${data.suggestion}</p>
-                        <p><strong>Transaction ID:</strong> 
-                            <a href="${data.explorer}" target="_blank" rel="noopener noreferrer">${data.txid}</a>
-                        </p>
-                        <p><strong>Tutar:</strong> ${data.amount} ${data.currency}</p>
-                    `;
-                } else {
-                    resultDiv.innerHTML = `<p style="color:red;">Hata: ${data.error}</p>`;
-                }
-
-            } catch (err) {
-                resultDiv.innerHTML = `<p style="color:red;">Sunucuya bağlanamadı!</p>`;
-                console.error(err);
-            }
+    try {
+        const response = await fetch("http://127.0.0.1:5000/add_expense", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ description, amount, currency })
         });
-    </script>
+
+        const data = await response.json();
+
+        const systemDiv = document.createElement("div");
+        systemDiv.classList.add("message", "system");
+
+        if (response.ok) {
+            systemDiv.innerHTML = `
+                <p><strong>Kategori:</strong> ${data.category}</p>
+                <p><strong>Öneri:</strong> ${data.suggestion}</p>
+                <p><strong>Transaction ID:</strong> 
+                    <a href="${data.explorer}" target="_blank" rel="noopener noreferrer">${data.txid}</a>
+                </p>
+                <p><strong>Tutar:</strong> ${data.amount} ${data.currency}</p>
+                <p><strong>Tutar TL:</strong> ${data.amount_tl} TL</p>
+            `;
+        } else {
+            systemDiv.innerHTML = `<p style="color:red;">Hata: ${data.error}</p>`;
+        }
+
+        resultDiv.appendChild(systemDiv);
+        resultDiv.scrollTop = resultDiv.scrollHeight;
+
+        form.reset();
+    } catch (err) {
+        const systemDiv = document.createElement("div");
+        systemDiv.classList.add("message", "system");
+        systemDiv.innerHTML = `<p style="color:red;">Sunucuya bağlanamadı!</p>`;
+        resultDiv.appendChild(systemDiv);
+        resultDiv.scrollTop = resultDiv.scrollHeight;
+        console.error(err);
+    }
+});
+
+</script>
 </body>
 </html>
