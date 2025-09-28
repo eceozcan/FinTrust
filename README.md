@@ -82,4 +82,5 @@ FinTech Innovators (Team 1)
 ### Notes
 - Ensure Algorand TestNet account and Pera Wallet connection are set up.
 - Gemini API key is optional; a fallback rule-based categorization exists.
-
+- Demo video is here: **https://drive.google.com/file/d/1T3uRsKLrK2qlBenWNhjgOlQ3ZRoCksmn/view?usp=sharing**
+  
