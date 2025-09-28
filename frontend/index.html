@@ -45,7 +45,7 @@ nav h1 {
 nav a {
     color: #5d3fd3;
     text-decoration: none;
-    margin-left: 1220px;
+    margin-left: auto;
     font-weight: 500;
 }
 
@@ -179,12 +179,19 @@ button:hover {
     nav { padding: 10px 20px; }
 }
 </style>
+
+<!-- Algorand SDK (browser) -->
+<script src="https://unpkg.com/algosdk/dist/browser/algosdk.min.js"></script>
+
+<!-- Pera Wallet Connect (browser) -->
+<script src="https://unpkg.com/@perawallet/connect/dist/bundle.min.js"></script>
+
 </head>
 <body>
 <nav>
     <h1>FinTrust</h1>
     <div>
-        <a href="#add-expense">Bugün ne aldın?</a>
+        <a href="#add-expense">Bugün ne almayı düşünüyorsun?</a>
     </div>
 </nav>
 
@@ -194,7 +201,12 @@ button:hover {
 </div>
 
 <div class="container" id="add-expense">
-    <h2>Bugün neler satın aldın?</h2>
+    <h2>Bugün ne satın almayı düşünüyorsun?</h2>
+    
+    <!-- Wallet Connect Butonları -->
+    <button type="button" onclick="connectWallet()">Wallet Bağla</button>
+    <button type="button" onclick="disconnectWallet()">Wallet Çıkış</button>
+
     <form id="expense-form">
         Ürün Açıklaması: <input type="text" id="description" placeholder="Örn: Starbucks Latte" required>
         Tutar: <input type="number" id="amount" placeholder="Örn: 25" required>
@@ -211,11 +223,48 @@ button:hover {
 </div>
 
 <script>
+// ----------------------
+// Pera Wallet Setup
+const peraWallet = new PeraWalletConnect.PeraWalletConnect({
+    bridge: 'https://bridge.perawallet.app',
+    showSignTxnToast: true
+});
+
+let connectedAccount = null;
+
+// Wallet bağlama
+async function connectWallet() {
+    try {
+        const accounts = await peraWallet.connect();
+        connectedAccount = accounts[0];
+        console.log("Bağlanan hesap:", connectedAccount);
+        alert("Pera Wallet bağlandı: " + connectedAccount);
+    } catch (err) {
+        console.error("Wallet bağlanamadı:", err);
+        alert("Wallet bağlanamadı: " + err.message);
+    }
+}
+
+// Wallet disconnect
+function disconnectWallet() {
+    peraWallet.disconnect();
+    connectedAccount = null;
+    console.log("Wallet bağlantısı kesildi.");
+    alert("Wallet bağlantısı kesildi.");
+}
+
+// ----------------------
+// Form submit
 const form = document.getElementById("expense-form");
 const resultDiv = document.getElementById("result");
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (!connectedAccount) {
+        alert("Lütfen önce Wallet bağlayın!");
+        return;
+    }
 
     const description = document.getElementById("description").value;
     const amount = parseFloat(document.getElementById("amount").value);
@@ -225,15 +274,13 @@ form.addEventListener("submit", async (e) => {
     userDiv.classList.add("message", "user");
     userDiv.innerHTML = `👤: ${description} - ${amount} ${currency}`;
     resultDiv.appendChild(userDiv);
-
-    // ✅ Sayfayı aşağı kaydır
     window.scrollTo(0, document.body.scrollHeight);
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/add_expense", {
+        const response = await fetch("http://192.168.1.50:5000/add_expense", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ description, amount, currency })
+            body: JSON.stringify({ description, amount, currency, wallet: connectedAccount })
         });
 
         const data = await response.json();
@@ -257,7 +304,7 @@ form.addEventListener("submit", async (e) => {
 
         resultDiv.appendChild(systemDiv);
         resultDiv.scrollTop = resultDiv.scrollHeight;
-        window.scrollTo(0, document.body.scrollHeight); // ✅ Buraya da eklendi
+        window.scrollTo(0, document.body.scrollHeight);
 
         form.reset();
     } catch (err) {
@@ -266,10 +313,11 @@ form.addEventListener("submit", async (e) => {
         systemDiv.innerHTML = `<p style="color:red;">Sunucuya bağlanamadı!</p>`;
         resultDiv.appendChild(systemDiv);
         resultDiv.scrollTop = resultDiv.scrollHeight;
-        window.scrollTo(0, document.body.scrollHeight); // ✅ Hatalı durumda da ekledik
+        window.scrollTo(0, document.body.scrollHeight);
         console.error(err);
     }
 });
 </script>
+
 </body>
 </html>

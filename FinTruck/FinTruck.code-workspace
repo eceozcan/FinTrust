@@ -1,0 +1,34 @@
+{
+  "folders": [
+    {
+      "path": "./",
+      "name": "ROOT"
+    },
+    {
+      "path": "projects/FinTruck"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "projects/": true
+    },
+    "jest.disabledWorkspaceFolders": [
+      "ROOT",
+      "projects"
+    ],
+    "liveServer.settings.multiRootWorkspaceName": "ROOT",
+    "liveServer.settings.port": 5501
+  },
+  "extensions": {
+    "recommendations": [
+      "joshx.workspace-terminals"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": []
+  },
+  "launch": {
+    "configurations": []
+  }
+}
