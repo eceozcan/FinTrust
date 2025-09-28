@@ -24,9 +24,9 @@ nav {
     width: 100%;
     background: rgba(255,255,255,0.6);
     backdrop-filter: blur(10px);
-    padding: 15px 30px;
+    padding: 20px 30px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     position: fixed;
     top: 0;
@@ -34,13 +34,57 @@ nav {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-nav h1 { margin: 0; font-size: 24px; font-weight: bold; color: #5d3fd3; }
-nav a { color: #5d3fd3; text-decoration: none; margin-left: 20px; font-weight: 500; }
+nav h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: #5d3fd3;
+    margin-right: 40px;
+}
+
+nav a {
+    color: #5d3fd3;
+    text-decoration: none;
+    margin-left: 1220px;
+    font-weight: 500;
+}
+
 nav a:hover { text-decoration: underline; }
+
+.welcome-banner {
+    margin-top: 150px;
+    text-align: center;
+    padding: 150px 60px;
+    animation: fadeIn 1.5s ease;
+}
+
+.welcome-banner h2 {
+    font-size: 60px;
+    font-weight: bold;
+    color: #5d3fd3;
+    margin: 0;
+}
+
+.welcome-banner h2 span {
+    background: linear-gradient(45deg, #b3a5f9, #87c8ff);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.welcome-banner p {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
 
 .container {
     max-width: 500px;
-    margin: 120px auto 50px auto;
+    margin: 130px auto 50px auto;
     padding: 30px;
     background: rgba(255,255,255,0.85);
     border-radius: 15px;
@@ -89,7 +133,6 @@ button:hover {
     border: 1px solid #ccc;
 }
 
-/* Chat balonları */
 .message {
     position: relative;
     padding: 12px 15px;
@@ -99,7 +142,6 @@ button:hover {
     box-shadow: 0 3px 6px rgba(0,0,0,0.05);
 }
 
-/* Kullanıcı mesajı */
 .message.user {
     background: #b3d4ff;
     align-self: flex-end;
@@ -116,7 +158,6 @@ button:hover {
     border-left: 10px solid transparent;
 }
 
-/* Sistem mesajı */
 .message.system {
     background: #e3e0ff;
     align-self: flex-start;
@@ -134,7 +175,7 @@ button:hover {
 }
 
 @media (max-width: 600px) {
-    .container { margin: 100px 20px; padding: 20px; }
+    .container { margin: 40px 20px; padding: 20px; }
     nav { padding: 10px 20px; }
 }
 </style>
@@ -143,15 +184,19 @@ button:hover {
 <nav>
     <h1>FinTrust</h1>
     <div>
-        <a href="#add-expense">Harcamayı Ekle</a>
-        <a href="#result">Sonuçlar</a>
+        <a href="#add-expense">Bugün ne aldın?</a>
     </div>
 </nav>
 
+<div class="welcome-banner">
+    <h2>Welcome to <span>FinTrust</span></h2>
+    <p>Akıllı harcama takibiyle bütçene yön ver!</p>
+</div>
+
 <div class="container" id="add-expense">
-    <h2>Harcamayı Ekle</h2>
+    <h2>Bugün neler satın aldın?</h2>
     <form id="expense-form">
-        Açıklama: <input type="text" id="description" placeholder="Örn: Starbucks Latte" required>
+        Ürün Açıklaması: <input type="text" id="description" placeholder="Örn: Starbucks Latte" required>
         Tutar: <input type="number" id="amount" placeholder="Örn: 25" required>
         Para Birimi:
         <select id="currency">
@@ -176,11 +221,13 @@ form.addEventListener("submit", async (e) => {
     const amount = parseFloat(document.getElementById("amount").value);
     const currency = document.getElementById("currency").value;
 
-    // Kullanıcı mesajı
     const userDiv = document.createElement("div");
     userDiv.classList.add("message", "user");
-    userDiv.innerHTML = `<strong>Sen:</strong> ${description} - ${amount} ${currency}`;
+    userDiv.innerHTML = `👤: ${description} - ${amount} ${currency}`;
     resultDiv.appendChild(userDiv);
+
+    // ✅ Sayfayı aşağı kaydır
+    window.scrollTo(0, document.body.scrollHeight);
 
     try {
         const response = await fetch("http://127.0.0.1:5000/add_expense", {
@@ -210,6 +257,7 @@ form.addEventListener("submit", async (e) => {
 
         resultDiv.appendChild(systemDiv);
         resultDiv.scrollTop = resultDiv.scrollHeight;
+        window.scrollTo(0, document.body.scrollHeight); // ✅ Buraya da eklendi
 
         form.reset();
     } catch (err) {
@@ -218,10 +266,10 @@ form.addEventListener("submit", async (e) => {
         systemDiv.innerHTML = `<p style="color:red;">Sunucuya bağlanamadı!</p>`;
         resultDiv.appendChild(systemDiv);
         resultDiv.scrollTop = resultDiv.scrollHeight;
+        window.scrollTo(0, document.body.scrollHeight); // ✅ Hatalı durumda da ekledik
         console.error(err);
     }
 });
-
 </script>
 </body>
 </html>
