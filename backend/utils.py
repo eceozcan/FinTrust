@@ -31,28 +31,29 @@ if USE_API and GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 
 # -----------------------------
-# Kategori & öneri
+# Categorization & Suggestions (English)
 # -----------------------------
 def categorize_rule_based(text):
     text_lower = text.lower()
-    if any(w in text_lower for w in ["burger","kafe","yemek","starbucks","kahve"]):
-        return "yiyecek", "Evde kendi kahveni hazırlayarak tasarruf edebilirsin."
-    if any(w in text_lower for w in ["taxi","metro","otobüs","dolmuş"]):
-        return "ulaşım", "Toplu taşıma kullanabilirsiniz."
-    if any(w in text_lower for w in ["sinema","konser","netflix","oyun"]):
-        return "eğlence", "Ücretsiz etkinlikleri tercih edin."
-    if any(w in text_lower for w in ["eczane","doktor","hastane"]):
-        return "sağlık", "Sigortanızı kontrol edin veya eczane indirimlerini kullanın."
-    if any(w in text_lower for w in ["alışveriş","market","trendyol","hepsiburada"]):
-        return "alışveriş", "Kampanya ve kuponları kullanın."
-    return "diğer", "Harcamayı gözden geçirin."
+    if any(w in text_lower for w in ["burger", "cafe", "food", "coffee", "starbucks"]):
+        return "food", "You could save money by preparing it at home."
+    if any(w in text_lower for w in ["taxi", "metro", "bus"]):
+        return "transportation", "Consider using public transport."
+    if any(w in text_lower for w in ["cinema", "concert", "netflix", "game"]):
+        return "entertainment", "Look for free or low-cost alternatives."
+    if any(w in text_lower for w in ["pharmacy", "doctor", "hospital"]):
+        return "health", "Check your insurance or explore discounts."
+    if any(w in text_lower for w in ["shopping", "market", "amazon"]):
+        return "shopping", "Consider comparing prices or using coupons."
+    return "other", "Review whether this expense is necessary."
 
 def categorize_with_gemini(text):
     prompt = f"""
-Aşağıdaki harcamayı kategoriye ayır:
+Classify the expense below:
 "{text}"
-Kategoriler: yiyecek, ulaşım, eğlence, sağlık, alışveriş, diğer
-Sadece kategori adı ve kısa öneri ver, örn: 'yiyecek - kahve yerine ev yapımı alabilirsiniz.'
+Categories: food, transportation, entertainment, health, shopping, other
+Respond with: category - suggestion
+Example: food - You could save money by preparing it at home.
 """
     model = genai.GenerativeModel("gemini-2.5-flash")
     response = model.generate_content(prompt)
@@ -68,13 +69,13 @@ def categorize_text(description):
         try:
             return categorize_with_gemini(description)
         except Exception as e:
-            print("Gemini API hatası:", e)
+            print("Gemini API error:", e)
             return categorize_rule_based(description)
     else:
         return categorize_rule_based(description)
 
 # -----------------------------
-# Algorand Fonksiyonları
+# Algorand Functions
 # -----------------------------
 def log_to_algorand(description, amount, category):
     note_text = f"{category}: {description} - {amount} - {uuid.uuid4()} - {int(time.time())}"
@@ -83,7 +84,7 @@ def log_to_algorand(description, amount, category):
     txn = PaymentTxn(
         sender=SENDER_ADDRESS,
         sp=params,
-        receiver=SENDER_ADDRESS,  # kendine log
+        receiver=SENDER_ADDRESS,  # logging to self
         amt=0,
         note=note
     )
@@ -96,8 +97,8 @@ def get_explorer_link(txid):
     return f"https://testnet.algoexplorer.io/tx/{txid}"
 
 # -----------------------------
-# Döviz -> TL çevirici (demo, gerçek API ile güncellenebilir)
+# Currency → TL (sample conversion)
 # -----------------------------
 def convert_to_tl(amount, currency):
-    rates = {"TL": 1, "USD": 36, "EUR": 40}  # Örnek sabit kur
+    rates = {"TL": 1, "USD": 36, "EUR": 40}  # Example static rates
     return round(amount * rates.get(currency, 1), 2)

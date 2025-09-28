@@ -1,7 +1,3 @@
-/* ---------------------- */
-/* style.css */
-/* ---------------------- */
-
 @keyframes gradientBG {
     0% {
         background-position: 0% 50%;
@@ -152,6 +148,10 @@ button:hover {
     background: linear-gradient(45deg, #a288f0, #74b8e7);
 }
 
+/* ---------------------- */
+/* Chat / messages */
+/* ---------------------- */
+
 .result {
     margin-top: 20px;
     padding: 10px;
@@ -160,10 +160,16 @@ button:hover {
     color: #333;
     max-height: 300px;
     overflow-y: auto;
+    scrollbar-width: none;
     display: flex;
     flex-direction: column;
     gap: 10px;
     border: 1px solid #ccc;
+}
+
+.result::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
 }
 
 .message {
@@ -209,6 +215,58 @@ button:hover {
     border-right: 10px solid transparent;
 }
 
+.label {
+    font-weight: bold;
+    background: linear-gradient(45deg, #8a42ff, #4a9fff);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+/* ---------------------- */
+/* Expense history */
+/* ---------------------- */
+.history {
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 15px;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.history h3 {
+    margin-top: 0;
+    font-size: 20px;
+    color: #5d3fd3;
+    text-align: center;
+}
+
+.history ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.history li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.history li a {
+    color: #5d3fd3;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.history li a:hover {
+    text-decoration: underline;
+}
+
+/* ---------------------- */
+/* Mobile responsiveness */
+/* ---------------------- */
 @media (max-width: 600px) {
     .container {
         margin: 40px 20px;
@@ -217,5 +275,17 @@ button:hover {
 
     nav {
         padding: 10px 20px;
+    }
+
+    .welcome-banner {
+        padding: 100px 20px;
+    }
+
+    .welcome-banner h2 {
+        font-size: 36px;
+    }
+
+    .history li {
+        font-size: 13px;
     }
 }

@@ -5,9 +5,27 @@ from utils import categorize_text, log_to_algorand, get_explorer_link, convert_t
 app = Flask(__name__)
 CORS(app)
 
+# Türkçe -> İngilizce kategori çevirisi
+category_map = {
+    "yiyecek": "food",
+    "alışveriş": "shopping",
+    "ulaşım": "transportation",
+    "eğlence": "entertainment",
+    "fatura": "bills",
+    "diğer": "other"
+}
+
+# Türkçe -> İngilizce öneri çevirisi
+suggestion_map = {
+    "evde yapmayı düşünebilirsiniz.": "You may consider making it at home.",
+    "ihtiyaç mı, istek mi ayırın.": "Consider whether it is a need or a want.",
+    "yiyecek israfını önleyin.": "Avoid wasting food.",
+    "harcamalarınızı takip edin.": "Track your expenses."
+}
+
 @app.route("/ping", methods=["GET"])
 def ping():
-    return jsonify({"status": "ok", "message": "Server çalışıyor!"}), 200
+    return jsonify({"status": "ok", "message": "Server is running!"}), 200
 
 @app.route("/add_expense", methods=["POST"])
 def add_expense():
@@ -17,16 +35,20 @@ def add_expense():
     currency = data.get("currency", "TL")
 
     if not description or amount is None:
-        return jsonify({"error": "description ve amount zorunludur"}), 400
+        return jsonify({"error": "description and amount are required"}), 400
 
     try:
-        # Kategori ve öneri
-        category, suggestion = categorize_text(description)
+        # Orijinal Türkçe kategori ve öneriyi al
+        original_category, original_suggestion = categorize_text(description)
+
+        # İngilizce çeviriye dönüştür
+        category = category_map.get(original_category.lower(), original_category)
+        suggestion = suggestion_map.get(original_suggestion.lower(), original_suggestion)
 
         # TL karşılığını hesapla
         amount_tl = convert_to_tl(amount, currency)
 
-        # Algorand blockchain'e logla (benzersiz note için)
+        # Algorand blockchain'e kaydet
         txid = log_to_algorand(description, amount, category)
 
         return jsonify({
@@ -45,5 +67,3 @@ def add_expense():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-
