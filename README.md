@@ -51,15 +51,6 @@ The application is built with **React** for the frontend and **Flask** for the b
 
 ---
 
-### 👥 Team Members
-| Name | Email |
-|------|-------|
-| Ece Özcan | [ecemerve8@yahoo.com] |
-| Irmak Tarhan | [irmaktarhan03@gmail.com] |
-
-### Team Name
-FinTech Innovators (Team 1)
-
 ### 💻 Installation
 1. Clone the repository: `git clone https://github.com/yourusername/FinTrust.git`
 2. Backend setup:
