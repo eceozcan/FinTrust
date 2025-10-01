@@ -74,4 +74,5 @@ The application is built with **React** for the frontend and **Flask** for the b
 - Ensure Algorand TestNet account and Pera Wallet connection are set up.
 - Gemini API key is optional; a fallback rule-based categorization exists.
 - Demo video is here: **https://drive.google.com/file/d/1T3uRsKLrK2qlBenWNhjgOlQ3ZRoCksmn/view?usp=sharing**
+- Presentation link: **https://www.canva.com/design/DAG0QG0nDbw/03LWQS0SGQlAbnnFGWgHIg/edit?utm_content=DAG0QG0nDbw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton**
   
